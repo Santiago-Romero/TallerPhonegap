@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="msapplication-tap-highlight" content="no" />
+    <meta name="viewport"
+        content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width" />
+    <meta http-equiv="Content-Security-Policy"
+        content="default-src * 'unsafe-inline'; style-src 'self' 'unsafe-inline'; media-src *" />
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
+    <script type="text/javascript" src="js/jquery-3.4.1.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/index.css" />
+    <title>Taller Phonegap
+    </title>
+</head>
+
+<body>
+    <div class="justify-content-center">
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <input id="filtro" class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+            </li>
+            <li class="nav-item">
+                <button class="btn btn-block btn-success" onclick="window.location.href='index.html'"
+                    type="button">Volver</button>
+
+            </li>
+            <li class="nav-item">
+                <button class="btn btn-block btn-warning" onclick="javascript:leerMock(2);" type="button">-----</button>
+            </li>
+            <li class="nav-item">
+                <button class="btn btn-block btn-secondary" onclick="javascript:leerMock(1);"
+                    type="button">-----</button>
+            </li>
+
+        </ul>
+        <div id="result">
+        </div>
+    </div>
+
+    <div class="app">
+        <div class="container">
+
+            <table class="table" id="tablePhp">
+                <tr>
+                    <td>ID</td>
+                    <td>NOMBRE</td>
+                    <td>DIRECCIÓN</td>
+                </tr>
+            </table>
+
+            <div class="modal fade bottom" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-frame modal-bottom" role="document">
+                    <div class="modal-content">
+                        <div class="modal-body">
+                            <div class="row d-flex justify-content-center align-items-center">
+                                <p class="pt-3 pr-2">Datos encontrados</p>
+                                <br>
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                                <button type="button" class="btn btn-primary" data-dismiss="modal">Aceptar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <script type="text/javascript" src="cordova.js"></script>
+        <script type="text/javascript" src="js/index.js"></script>
+        <script type="text/javascript" src="js/bootstrap.min.js"></script>
+        <script type="text/javascript">
+            app.initialize();
+
+            function leerMock(option) {
+                if (option == 1) {
+                    $.ajax({
+                        url: "http://www.mocky.io/v2/5d39a3df2f000071006ebcf8",
+                        success: function (result) {
+                            var htmlResult = "<table class='table' border='1' id='resultado'>";
+                            htmlResult += "<tr>";
+                            htmlResult += "<th>Id</th>";
+                            htmlResult += "<th>Name</th>";
+                            htmlResult += "<th>College</th>";
+                            htmlResult += "</tr>";
+                            for (i in result.students) {
+                                htmlResult += "<tr>";
+                                htmlResult += "<td>" + result.students[i].id + "</td>";
+                                htmlResult += "<td>" + result.students[i].name + "</td>";
+                                htmlResult += "<td>" + result.students[i].college + "</td>";
+                                htmlResult += "</tr>";
+                            }
+                            htmlResult += "</table>";
+                            document.getElementById('result').innerHTML = htmlResult;
+
+                        },
+                        statusCode: {
+                            200: function () {
+                                $("#myModal").modal()
+                                //alert('exito con la consulta');
+                            }
+                        }
+                    })
+                } else if (option == 2) {
+                    $('#result').load('http://www.mocky.io/v2/5d39a3df2f000071006ebcf8');
+                }
+
+            }
+        </script>
+</body>
+
+</html>

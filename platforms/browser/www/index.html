@@ -20,60 +20,37 @@
     <div class="justify-content-center">
         <ul class="nav flex-column">
             <li class="nav-item">
-                <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+                <input id="filtro" class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
             </li>
             <li class="nav-item">
                 <button class="btn btn-block btn-success" onclick="javascript:mostrarContactos();"
-                    type="button">Contactos?</button>
+                    type="button">Contactos</button>
 
             </li>
             <li class="nav-item">
-                <button class="btn btn-block btn-danger" onclick="javascript:hola();" type="button">Conectado?</button>
+                <button class="btn btn-block btn-danger" onclick="javascript:checkConnection();"
+                    type="button">Conectado?</button>
             </li>
             <li class="nav-item">
-                <button class="btn btn-block btn-warning" onclick="javascript:leerMock(2);" type="button">Conectado 2</button>
+                <button class="btn btn-block btn-warning" onclick="window.location.href='ventana.html'"
+                    type="button">Navegar</button>
             </li>
             <li class="nav-item">
-                <button class="btn btn-block btn-secondary" onclick="javascript:leerMock(1);" type="button">Servicio</button>
+                <button class="btn btn-block btn-info" onclick="window.location.href='leer.html'"
+                    type="button">Servicio</button>
             </li>
-            <li>
-                <button class="btn btn-block btn-primary" onclick="javascript:checkConnection();" type="button">Conexion</button>
-            </li>
+
         </ul>
-        <div id="result">
-        </div>
     </div>
 
     <div class="app">
         <div class="container">
-            <!-- resultados -->
-
-
-            <table id="tableContactos">
+            <table class="table" id="tableContactos">
                 <tr>
-                    <td></td>
-                    <td></td>
+                    <td>Nombre</td>
+                    <td>Teléfono</td>
                 </tr>
             </table>
-
-            <!-- Modal -->
-            <div class="modal fade bottom" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
-                aria-hidden="true">
-                <!-- Add class .modal-frame and then add class .modal-bottom (or other classes from list above) to set a position to the modal -->
-                <div class="modal-dialog modal-frame modal-bottom" role="document">
-                    <div class="modal-content">
-                        <div class="modal-body">
-                            <div class="row d-flex justify-content-center align-items-center">
-                                <p class="pt-3 pr-2">Datos encontrados</p>
-                                <br>
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                                <button type="button" class="btn btn-primary" data-dismiss="modal">Aceptar</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
         </div>
 
         <script type="text/javascript" src="cordova.js"></script>
@@ -82,66 +59,42 @@
         <script type="text/javascript">
             app.initialize();
 
-            function hola() {
-                alert('hola mundo');
-            }
-
-            function leerMock(option) {
-                if (option == 1) {
-                    $.ajax({
-                        url: "http://www.mocky.io/v2/5d39a3df2f000071006ebcf8",
-                        success: function (result) {
-                            var htmlResult = "<table class='table' border='1' id='resultado'>";
-                            htmlResult += "<tr>";
-                            htmlResult += "<th>Id</th>";
-                            htmlResult += "<th>Name</th>";
-                            htmlResult += "<th>College</th>";
-                            htmlResult += "</tr>";
-                            for (i in result.students) {
-                                htmlResult += "<tr>";
-                                htmlResult += "<td>" + result.students[i].id + "</td>";
-                                htmlResult += "<td>" + result.students[i].name + "</td>";
-                                htmlResult += "<td>" + result.students[i].college + "</td>";
-                                htmlResult += "</tr>";
-                            }
-                            htmlResult += "</table>";
-                            document.getElementById('result').innerHTML = htmlResult;
-
-                        },
-                        statusCode: {
-                            200: function () {
-                                $("#myModal").modal()
-                                //alert('exito con la consulta');
-                            }
-                        }
-                    })
-                } else if (option == 2) {
-                    $('#result').load('http://www.mocky.io/v2/5d39a3df2f000071006ebcf8');
-                }
-
-            }
-
             function mostrarContactos() {
+                navigator.vibrate(3000);
                 var options = new ContactFindOptions();
-                options.filter = "María";
+                var telefono = document.getElementById("filtro").value;
+                var fields = ["displayName", "name"];
+
+                if (telefono.length > 0) {
+                    options.filter = telefono;
+                    fields = ["displayName", "phoneNumbers"];
+                }
                 options.multiple = true;
-                options.desiredFields = [navigator.contacts.fieldType.id];
-                options.hasPhoneNumber = true;
-                var fields = [navigator.contacts.fieldType.displayName, navigator.contacts.fieldType.name];
-                //BUSCAR CONTACTOS
                 navigator.contacts.find(fields, onSuccess, onError, options);
             }
 
             function onSuccess(contacts) {
-                alert(contacts.length);
-                console.log(contacts.length);
+                console.log("Contactos = " + contacts.length);
+                alert('cantidad:' + contacts.length);
                 var table = document.getElementById("tableContactos");
-                for (var i = 0; i <= contacts.length; i++) {
-                    var row = table.insertRow(0);
-                    var cell1 = table.insertCell(0);
-                    var cell2 = table.insertCell(1);
+                table.innerHTML = "";
+
+                for (var i = 0; i < contacts.length; i++) {
+
+                    console.log("Display Name = " + contacts[i].displayName);
+
+                    var row = table.insertRow(i);
+                    var cell1 = row.insertCell(0);
+
                     cell1.innerHTML = contacts[i].displayName;
-                    cell2.innerHTML = contacts[i].phoneNumbers[0];
+                    if (contacts[i].phoneNumbers !== null) {
+                        for (var j = 0; j < contacts[i].phoneNumbers.length; j++) {
+                            var cell2 = row.insertCell(1);
+                            cell2.innerHTML = contacts[i].phoneNumbers[0].value;
+                        }
+
+                    }
+
                 }
             }
 
